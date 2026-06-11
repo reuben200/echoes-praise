@@ -1,0 +1,95 @@
+{
+  "entities": {
+    "registrations": {
+      "title": "Registration",
+      "description": "Database representation of a church attendee registration",
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string",
+          "description": "Full name of the attendee"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the attendee"
+        },
+        "mobile": {
+          "type": "integer",
+          "description": "Mobile phone number of the attendee"
+        },
+        "member": {
+          "type": "boolean",
+          "description": "Whether the attendee is a member of the congregation"
+        },
+        "congregation": {
+          "type": "string",
+          "description": "Congregation name of the attendee"
+        },
+        "attendance_mode": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Attendance mode (In-Person, Online)"
+        },
+        "song_part": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Song part selection (treble, alto, tenor, baritone, bass, free)"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Prayer requests, expectations, or additional notes"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the signup"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the last modification"
+        }
+      },
+      "required": ["full_name", "email", "mobile", "member", "congregation", "attendance_mode", "song_part"]
+    },
+    "inquiries": {
+      "title": "Inquiry",
+      "description": "Database representation of a user inquiry query or message",
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "description": "Full name of the inquirer"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the inquirer"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number of the inquirer"
+        },
+        "message": {
+          "type": "string",
+          "description": "Message, question, or inquiry description"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the inquiry submission"
+        }
+      },
+      "required": ["fullName", "email", "phone", "message"]
+    }
+  },
+  "firestore": {
+    "registrations/{registrationId}": {
+      "schema": "registrations",
+      "description": "Registrations signed up via the Echoes of Praise landing page"
+    },
+    "inquiries/{inquiryId}": {
+      "schema": "inquiries",
+      "description": "Inquiries, helpline queries, and questions submitted from the footer region"
+    }
+  }
+}

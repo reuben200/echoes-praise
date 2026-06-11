@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // The admin must be signed in with credentials in Firebase Authentication (no roles specified)
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email != null;
+    }
+
+    // Prevents ID injection of massive or corrupt strings
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_@.-]+$');
+    }
+
+    // Entity validation blueprint (preventing Shadow Updates and Resource Poisoning)
+    function isValidRegistration(data) {
+      return 
+        // Enforce presence of all required fields
+        data.keys().hasAll(['full_name', 'email', 'mobile', 'member', 'congregation', 'attendance_mode', 'song_part', 'createdAt', 'updatedAt']) &&
+        data.keys().size() >= 9 && data.keys().size() <= 12 &&
+        // Correct types and strict limits
+        data.full_name is string && data.full_name.size() >= 2 && data.full_name.size() <= 100 &&
+        data.email is string && data.email.size() >= 5 && data.email.size() <= 150 &&
+        (data.mobile is int || data.mobile is number) &&
+        data.member is bool &&
+        data.congregation is string && data.congregation.size() >= 1 && data.congregation.size() <= 150 &&
+        data.attendance_mode is list && data.attendance_mode.size() >= 1 &&
+        data.song_part is list && data.song_part.size() >= 1 &&
+        // Temporal integrity
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp &&
+        // Conditional schema formatting
+        (!data.keys().hasAll(['notes']) || (data.notes is string && data.notes.size() <= 2000));
+    }
+
+    function isValidInquiry(data) {
+      return
+        data.keys().hasAll(['fullName', 'email', 'phone', 'message', 'createdAt']) &&
+        data.keys().size() >= 5 && data.keys().size() <= 8 &&
+        data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 100 &&
+        data.email is string && data.email.size() >= 5 && data.email.size() <= 150 &&
+        data.phone is string && data.phone.size() >= 7 && data.phone.size() <= 40 &&
+        data.message is string && data.message.size() >= 5 && data.message.size() <= 2000 &&
+        data.createdAt is timestamp;
+    }
+
+    // Registrations collection
+    match /registrations/{registrationId} {
+      // Create is public so attendees can RSVP easily
+      allow create: if isValidId(registrationId) && 
+                       isValidRegistration(request.resource.data) &&
+                       request.resource.data.createdAt == request.time &&
+                       request.resource.data.updatedAt == request.time;
+      
+      // Only authenticated admin can list registrations; singular get is publicly readable for checking RSVP status
+      allow get: if isValidId(registrationId);
+      allow list: if isAdmin();
+      
+      // Allow administrator updates OR public overwrites/updates if they have a valid ID and request matches current time
+      allow update: if (isAdmin() && 
+                        isValidRegistration(request.resource.data) &&
+                        request.resource.data.updatedAt == request.time &&
+                        request.resource.data.createdAt == resource.data.createdAt) ||
+                       (!isAdmin() &&
+                        isValidId(registrationId) &&
+                        isValidRegistration(request.resource.data) &&
+                        request.resource.data.updatedAt == request.time &&
+                        request.resource.data.createdAt == request.time);
+                        
+      // Only administrator can purge or clean up registrations
+      allow delete: if isAdmin();
+    }
+
+    // Inquiries collection
+    match /inquiries/{inquiryId} {
+      // Create is public so anyone can make an inquiry
+      allow create: if isValidId(inquiryId) && 
+                       isValidInquiry(request.resource.data) &&
+                       request.resource.data.createdAt == request.time;
+      
+      // Only authenticated admin can view or list inquiries
+      allow get, list: if isAdmin();
+      
+      // Nobody can update inquiries once submitted
+      allow update: if false;
+                       
+      // Only administrator can delete inquiries
+      allow delete: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-display: "Cinzel", Georgia, serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-gold-50: #fefcf3;
+  --color-gold-100: #fcf6df;
+  --color-gold-200: #f7eca6;
+  --color-gold-300: #efdc6d;
+  --color-gold-400: #e2c13d;
+  --color-gold-500: #cca21d;
+  --color-gold-600: #a97e14;
+  --color-gold-700: #845a11;
+  --color-gold-800: #674411;
+  --color-gold-900: #553713;
+  --color-gold-950: #311c07;
+}
+
+/* Beautiful custom subtle gradients and typography effects */
+.text-shimmer {
+  background: linear-gradient(135deg, #f7eca6 0%, #cca21d 50%, #f7eca6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gold-gradient {
+  background: linear-gradient(to right, #efdc6d, #cca21d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.border-gold-gradient {
+  border-image: linear-gradient(to right, #674411, #cca21d, #674411) 1;
+}
+
+.glow-heavy {
+  box-shadow: 0 0 40px rgba(204, 162, 29, 0.15);
+}
+
+.glow-btn {
+  box-shadow: 0 4px 14px 0 rgba(204, 162, 29, 0.4);
+}
+
+.glow-text-gold {
+  text-shadow: 0 0 10px rgba(204, 162, 29, 0.3);
+}
+
+/* Print layout optimizations */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-shadow-none {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+}
+
