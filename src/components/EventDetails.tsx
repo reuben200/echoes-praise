@@ -8,7 +8,7 @@ export function EventHero() {
     <div className="relative rounded-3xl overflow-hidden border border-gold-900/30 glow-heavy w-full min-h-[380px] sm:min-h-[440px] flex flex-col justify-end p-5 sm:p-7 md:p-8 group no-print">
       {/* Banner image background */}
       <motion.img
-        src="/src/assets/images/hero-banner.png"
+        src="/assets/images/hero-banner.png"
         alt="Echoes of Praise Worship"
         referrerPolicy="no-referrer"
         className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.02] transition duration-[1200ms] ease-out"
